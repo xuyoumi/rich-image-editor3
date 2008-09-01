@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<module>
+    <moduleName>rich_imgEditor</moduleName>
+    <moduleType>application</moduleType>
+    <moduleId>RIE</moduleId>
+    <version>3.0.0</version>
+    <author>Richie Bartlett</author>
+    <description>(ProtoType) Image Editor 3.0</description>
+    <files>
+        <css>
+            <file>rich_imgEditor-v3.0.css</file>
+        </css>
+        <js>
+            <file>rich_imgEditor-v3.0.js</file>
+        </js>
+        <php>
+        	<file></file>
+        </php>
+    </files>
+</module>

@@ -1,0 +1,344 @@
+/*
+* Image Editor 3.0
+* for the qWikiOffice platform(v0.7.1) powered by EXTjs.com framework.
+* design & coded by Richie Bartlett
+* code Date: July 2008
+*/
+
+.RIE-Icon {
+    background-image: url(/!Admin/system/modules/rich_imgEditor-v3.0/images/16x16pscs3icon.jpg) !important;
+	background-repeat:none;
+	background-position: left;
+}
+.RIE-QuickStartIcon {
+    background-image: url(/!Admin/system/modules/rich_imgEditor-v3.0/images/16x16pscs3icon.jpg);
+	background-repeat:none;
+	background-position: left;
+}
+.RIE-shortcut img {
+    background-image: url(/!Admin/system/modules/rich_imgEditor-v3.0/images/48x47pscs3icon.png);
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/images/48x47pscs3icon.png', sizingMethod='scale');
+	background-repeat:none;
+	background-position: left;
+}
+.RIE-about {
+    background-image: url(/!Admin/system/modules/rich_imgEditor-v3.0/images/14x16_shittoku.png);
+	background-repeat:none;
+	background-position: left;
+}
+
+/* Menu & Toolbar styles */
+.RIE-option {background-image: url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/application_view_detail.png) !important;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/application_view_detail.png', sizingMethod='scale');
+	background-repeat:none;
+	background-position: left;
+}
+.RIE-add {background-image: url(/!Admin/system/modules/rich_imgEditor-v3.0/images/add.gif) !important;}
+.RIE-remove {background-image: url(/!Admin/system/modules/rich_imgEditor-v3.0/images/delete.gif) !important;}
+.RIE-cancel {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/images/cross.png) !important;;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/images/cross.png', sizingMethod='scale');
+}
+.RIE-newImg {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/page_white_paint.png) !important;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/page_white_paint.png', sizingMethod='scale');
+}
+.RIE-opImg {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/server_database.png) !important;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/server_database.png', sizingMethod='scale');
+}
+.RIE-upImg {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/folder_image.png) !important;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/folder_image.png', sizingMethod='scale');
+}
+.RIE-saveImg {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/disk.png) !important;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/disk.png', sizingMethod='scale');
+}
+.RIE-downLoad {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/drive.png) !important;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/drive.png', sizingMethod='scale');
+}
+.RIE-imgProp {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/table_go.png) !important;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/table_go.png', sizingMethod='scale');
+}
+.RIE-imgResize {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/arrow_in.png) !important;
+/*    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/arrow_in.png', sizingMethod='scale');*/
+	width: 16px;
+	height: 16px;
+	background-repeat:none;
+	background-position: left;
+}
+.RIE-imgHand {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/mouse.png) !important;
+    /*filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/mouse.png', sizingMethod='scale');*/
+	width: 16px;
+	height: 16px;
+	background-repeat:none;
+	background-position: left;
+}
+.RIE-imgZoom {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/magnifier.png) !important;
+/*    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/magnifier.png', sizingMethod='scale');*/
+	width: 16px;
+	height: 16px;
+	background-repeat:none;
+	background-position: left;
+}
+.RIE-imgMarquee {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/shape_handles.png) !important;
+/*    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/shape_handles.png', sizingMethod='scale');*/
+	width: 16px;
+	height: 16px;
+	background-repeat:none;
+	background-position: left;
+}
+.RIE-imgCrop {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/cut_red.png) !important;
+/*    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/cut_red.png', sizingMethod='scale');*/
+	width: 16px;
+	height: 16px;
+	background-repeat:none;
+	background-position: left;
+}
+.RIE-imgRotate {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/arrow_rotate_clockwise.png) !important;
+/*    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/arrow_rotate_clockwise.png', sizingMethod='scale');*/
+	width: 16px;
+	height: 16px;
+	background-repeat:none;
+	background-position: left;
+}
+.RIE-imgMirror {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/shape_square_go.png) !important;
+/*    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/shape_square_go.png', sizingMethod='scale');*/
+	width: 16px;
+	height: 16px;
+	background-repeat:none;
+	background-position: left;
+}
+.RIE-imgMirrorH {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/shape_flip_horizontal.png) !important;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/shape_flip_horizontal.png', sizingMethod='scale');
+}
+.RIE-imgMirrorV {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/shape_flip_vertical.png) !important;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/shape_flip_vertical.png', sizingMethod='scale');
+	background-repeat:none;
+	background-position: left;
+}
+.RIE-yes {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/accept.png) !important;
+/*    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/accept.png', sizingMethod='scale');*/
+	background-repeat:none;
+	background-position: left;
+}
+.RIE-no {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/cancel.png) !important;
+/*    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/cancel.png', sizingMethod='scale');*/
+	background-repeat:none;
+	background-position: left;
+}
+.RIE-restore {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/arrow_refresh.png) !important;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/arrow_refresh.png', sizingMethod='scale');
+}
+.RIE-refresh {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/page_refresh.gif) !important;
+}
+.RIE-undo {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/arrow_undo.png) !important;
+/*    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/arrow_undo.png', sizingMethod='scale');*/
+	width: 16px;
+	height: 16px;
+	background-repeat:none;
+	background-position: left;
+}
+.RIE-redo {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/arrow_redo.png) !important;
+/*    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/arrow_redo.png', sizingMethod='scale');*/
+	width: 16px;
+	height: 16px;
+	background-repeat:none;
+	background-position: left;
+}
+.RIE-etc {background-image:url(/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/color_wheel.png) !important;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/color_wheel.png', sizingMethod='scale');
+	width: 16px;
+	height: 16px;
+	background-repeat:none;
+	background-position: left;
+}
+
+/* DialogBox styles */
+.gpError {background:transparent url(/!Admin/system/modules/rich_imgEditor-v3.0/images/block_32x32.png) no-repeat top left;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin//system/modules/rich_imgEditor-v3.0/images/block_32x32.png', sizingMethod='scale');
+	background-repeat:none;
+	background-position: left;
+}
+.gpAlert {background:transparent url(/!Admin/system/modules/rich_imgEditor-v3.0/images/alert_32x32.png) no-repeat top left;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin//system/modules/rich_imgEditor-v3.0/images/alert_32x32.png', sizingMethod='scale');
+	background-repeat:none;
+	background-position: left;
+}
+
+/* StatusBar styles */
+#rich_imgEditor-win-statusbar .x-status-text {
+    color: #777;
+}
+#rich_imgEditor-win-statusbar .x-status-busy {
+    padding-left: 25px;
+    background: transparent url(/!Admin/system/modules/rich_imgEditor-v3.0/images/saving.gif) no-repeat 3px 3px;
+	background-repeat:none;
+	background-position: left;
+}
+#rich_imgEditor-win-statusbar .x-status-saved {
+    padding-left: 25px;
+    background: transparent url(/!Admin/system/modules/rich_imgEditor-v3.0/images/saved.png) no-repeat 3px 3px;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin//system/modules/rich_imgEditor-v3.0/images/saved.png', sizingMethod='scale');
+	background-repeat:none;
+	background-position: left;
+
+}
+
+/* StatusBar form validation styles */
+.x-statusbar .x-status-error {
+    color: #C33;
+    cursor: pointer;
+    padding-left: 25px;
+    background: transparent url(!Admin/system/modules/rich_imgEditor-v3.0/icons/png/exclamation.png) no-repeat 3px 3px;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/exclamation.png', sizingMethod='scale');
+
+	background-repeat:none;
+	background-position: left;
+	width: 16px;
+	height: 16px;
+}
+.x-statusbar .x-status-valid {
+    padding-left: 25px;
+    background: transparent url(/!Admin/system/modules/rich_imgEditor-v3.0/images/accept.png) no-repeat 3px 3px;
+    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin//system/modules/rich_imgEditor-v3.0/images/accept.png', sizingMethod='scale');
+
+	background-repeat:none;
+	background-position: left;
+	width: 16px;
+	height: 16px;
+}
+.x-status-error-list {
+    font: 11px tahoma,arial,verdana,sans-serif;
+    position: absolute;
+    z-index: 9999;
+    border: 1px solid #C33;
+    background: #ffa;
+    padding: 5px 10px;
+    color: #999;
+}
+.x-status-error-list li {
+    cursor: pointer;
+    list-style: disc;
+    margin-left: 10px;
+}
+.x-status-error-list li a {
+    color: #15428B;
+    text-decoration: none;
+}
+.x-status-error-list li a:hover {
+    text-decoration: underline;
+}
+
+
+/* Main Window/Canvas Styles */
+
+#ImageEditorContainer {
+	padding: 0px 3px 3px 3px;
+	font-size: 10px;
+	color: #000000;
+}
+
+#ImageEditorCanvas {
+	background-repeat: no-repeat;
+/*	position:absolute;
+	z-index:1;  */
+}
+#ImageEditorWindow{
+	padding: 0px 0px 0px 0px;
+/*		z-index:1; */
+	overflow: hidden;
+}
+#ImageEditorCropSize {
+/*	position:absolute; */
+	z-index:0; 
+	font-size: 10px;
+	color:#000000;
+}
+#ImageEditorMouseXY {
+/*	position:absolute; */
+	z-index:0; 
+	font-size: 10px;
+	color:#000000;
+}
+#ImageEditorMouseX {
+	position:absolute; 
+	z-index:0; 
+	font-size: 10px;
+	color:#000000;
+}
+#ImageEditorMouseY {
+	position:absolute; 
+	z-index:0; 
+	font-size: 10px;
+	color:#000000;
+}
+.BLACKtext {color: #000000}
+
+
+/*	@import "chooser.css";*/
+#img-chooser-dlg .details{ 
+    padding: 10px; 
+    text-align: center; 
+} 
+#img-chooser-dlg .details-info{ 
+    border-top: 1px solid #cccccc; 
+    font: 11px Arial, Helvetica, sans-serif; 
+    margin-top: 5px; 
+    padding-top: 5px; 
+    text-align: left; 
+} 
+#img-chooser-dlg .details-info b{ 
+    color: #555555; 
+    display: block; 
+    margin-bottom: 4px; 
+} 
+#img-chooser-dlg .details-info span{ 
+    display: block; 
+    margin-bottom: 5px; 
+    margin-left: 5px; 
+} 
+
+#img-chooser-view{ 
+    background: white; 
+    font: 11px Arial, Helvetica, sans-serif;
+} 
+#img-chooser-view .thumb{ 
+    background: #dddddd; 
+    padding: 3px; 
+} 
+#img-chooser-view .thumb img{ 
+    height: 60px; 
+    width: 80px; 
+} 
+#img-chooser-view .thumb-wrap{ 
+    float: left; 
+    margin: 4px; 
+    margin-right: 0; 
+    padding: 5px;
+} 
+#img-chooser-view .thumb-wrap span{ 
+    display: block; 
+    overflow: hidden; 
+    text-align: center; 
+} 
+#img-chooser-view .x-view-over{
+    border:1px solid #dddddd; 
+    background: #efefef url(/!Admin/system/modules/rich_imgEditor-v3.0/images/row-over.gif) repeat-x left top; 
+    padding: 4px; 
+}
+#img-chooser-view .x-view-selected{ 
+    background: #DFEDFF; 
+    border: 1px solid #6593cf; 
+    padding: 4px; 
+} 
+#img-chooser-view .x-view-selected .thumb{ 
+    background:transparent; 
+}
+#img-chooser-view .x-view-selected span{ 
+    color:#1A4D8F;
+}
+#img-chooser-view .loading-indicator { 
+    font-size:11px; 
+	background-image:url('/!Admin/system/modules/rich_imgEditor-v3.0/images/loading.gif');
+    background-repeat: no-repeat; 
+    background-position: left; 
+    padding-left:20px; 
+    margin:10px; 
+} 
