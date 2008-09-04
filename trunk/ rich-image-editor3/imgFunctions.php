@@ -22,7 +22,7 @@ function fastimagecopyresampled(&$dst_image, $src_image, $dst_x, $dst_y, $src_x,
   // 3 = Up to 60 times faster.  Will give high quality smooth results very close to imagecopyresampled.
   // 4 = Up to 25 times faster.  Almost identical to imagecopyresampled for most images.
   // 5 = No speedup.  Just uses imagecopyresampled, highest quality but no advantage over imagecopyresampled.
-
+try{
 	if(empty($src_image) || empty($dst_image)) return false;
 	if($quality <= 1){
 		$temp = imagecreatetruecolor($dst_w+1, $dst_h+1);
@@ -38,8 +38,11 @@ function fastimagecopyresampled(&$dst_image, $src_image, $dst_x, $dst_y, $src_x,
 		imagedestroy($temp);
 	}else {
 		imagecopyresampled($dst_image, $src_image, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h);
-	}
+	}//end if quality
 	return true;
+}catch (Exception $e){
+	return false;
+}//end try...catch
 }//end function fastimagecopyresampled
 
 
