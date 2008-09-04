@@ -51,13 +51,12 @@ $imgAspectRatio = 1;
 
 
 $imgType = strtolower(substr($imageName, strrpos($imageName, ".")-strlen($imageName)+1 ));
-$imgNameIndex=substr($imageName, 0,strrpos($imageName, "."));
-$imgNameIndex.="____[$Hindex].$imgType";
+$imgNameIndex=substr($imageName, 0,strrpos($imageName, "."))."____[$Hindex].$imgType";
 
 
 if($action!="storeImage" && $action!="exploreImages"){
 
-	if(empty($imageName) || !file_exists($originalDirectory.$imageName)){echo "{success:false,imageFound:false,error:\"Image data not found...\"}";exit;}
+	if(empty($imageName) || $imageName=="" || !file_exists($originalDirectory.$imageName)){echo "{success:false,imageFound:false,error:\"Image data not found...\"}";exit;}
 //make the "undo" files
 	if($Hindex>0){
 		@copy($editDirectory.substr($imageName, 0,strrpos($imageName, "."))."____[".($Hindex-1)."].$imgType", $editDirectory.$imgNameIndex);
@@ -86,17 +85,19 @@ switch($action){
 		
 		$TheFileName = $_FILES['rie_upFILE']['name'];
 		$TempName = $_FILES['rie_upFILE']['tmp_name'];
+		$uploaded=true;
+		$uploaded=is_uploaded_file($_FILES['rie_upFILE']['tmp_name']);//2nd security check -- guards against hacks
 		///check the file... is it an actual image??
 		$imgSizeCheck = @getimagesize($TempName);
-		if(!preg_match($requiredImageFileType, strtolower($TheFileName)) || !$imgSizeCheck){ //must be image
-			if(file_exists($TheFileName)) unlink($TheFileName); //clean it up!
-			if(file_exists($TempName)) unlink($TempName); //clean it up!
-			$response = "{success:false, error:\"The file you tried to upload wasn't a valid ".$imageTypeErrMsg." file.\"}"; 
+		if(!preg_match($requiredImageFileType, strtolower($TheFileName)) || !$imgSizeCheck || !$uploaded){ //must be image
+			if(file_exists($TheFileName)) @unlink($TheFileName); //clean it up!
+			if(file_exists($TempName)) @unlink($TempName); //clean it up!
+			$response = "{success:false, error:\"The file you tried to upload wasn't a valid $imageTypeErrMsg file.\"}"; 
 		}else{//good image
 		//TODO: need to check filename for existing file in target directories! if exist rename to userImgName.sessionID
 			@copy($TempName, $originalDirectory.$TheFileName);//for later retrieval
 			@copy($TempName, $editDirectory.$imgNameIndex);//for immediate editing
-			if(file_exists($TempName)) unlink($TempName); //clean it up!
+			if(file_exists($TempName)) @unlink($TempName); //clean it up!
 			$response="{success:true}";
 		}//end if !requiredImageFileType
 		break;
@@ -126,7 +127,7 @@ switch($action){
 				'h'=>$h, 
 				'tw'=>$tw, 
 				'th'=>$th, 
-				'imgRez'=>72, //TODO: write function to read img resolution
+				'imgRez'=>$imgRez, //TODO: write function to read img resolution
 				'lastmod'=>filemtime($originalDirectory.$name)*1000, 
 				'url'=>substr($originalDirectory, strpos($originalDirectory,"!Admin")-1).$name
 				//'url'=>"/!Admin/system/modules/rich_imgEditor-v3.0/getImage.php?imageName=" .$name
@@ -140,12 +141,11 @@ switch($action){
 	case "undo":
 		//trash last redo
 		if($Hindex>0){
+			@unlink($editDirectory.substr($imageName, 0,strrpos($imageName, "."))."____[".($Hindex+0)."].$imgType");
 			@unlink($editDirectory.substr($imageName, 0,strrpos($imageName, "."))."____[".($Hindex+1)."].$imgType");
-			@unlink($editDirectory.substr($imageName, 0,strrpos($imageName, "."))."____[".($Hindex+2)."].$imgType");
 			$Hindex--;
 		}
-		$imgNameIndex=substr($imageName, 0,strrpos($imageName, "."));
-		$imgNameIndex.="____[$Hindex].$imgType";
+		$imgNameIndex=substr($imageName, 0,strrpos($imageName, "."))."____[$Hindex].$imgType";
 		
 		break;
 
@@ -153,17 +153,14 @@ switch($action){
 		copy($editDirectory.$imageName, $originalDirectory.$imgNameIndex);
 	case "cleanUp":
 		$response = "{success:true}";
-		$imgNameIndex=substr($imageName, 0,strrpos($imageName, "."));
-		$imgNameIndex.="____*.$imgType";
+		$imgNameIndex=substr($imageName, 0,strrpos($imageName, "."))."____*.$imgType";
 		//remove extra copies of image
 		if(file_exists($editDirectory.$imageName)) @unlink($editDirectory.$imageName);
-		foreach (glob($editDirectory.$imgNameIndex) as $filename) {
-		   @unlink($filename);
-		}//end for each  -  trash undo's
-		exit();
+		foreach (glob($editDirectory.$imgNameIndex) as $filename)  @unlink($filename);
+		exit();//no response required for this cmd
 		break;
 
-	case "viewOriginal":
+	case "viewOriginal"://old 2.x function... depreciated
 		copy($originalDirectory.$imageName, $editDirectory.$imgNameIndex);
 		break;
 
@@ -171,9 +168,9 @@ switch($action){
 		$imgNameIndex=substr($imageName, 0,strrpos($imageName, "."));
 		$imgNameIndex.="____*.$imgType";
 		//remove extra copies of image
-		foreach (glob($editDirectory.$imgNameIndex) as $filename) {
-		   @unlink($filename);
-		}//end for each  -  trash undo's
+		foreach (glob($editDirectory.$imgNameIndex) as $filename)  @unlink($filename);
+		$imgNameIndex=substr($imageName, 0,strrpos($imageName, "."));
+		$imgNameIndex.="____[$Hindex].$imgType";
 		copy($originalDirectory.$imageName, $editDirectory.$imgNameIndex);
 	case "viewActive":
 		if(!file_exists($editDirectory.$imgNameIndex)){
@@ -231,23 +228,36 @@ switch($action){
 		break;
 
 	case "resize": // additional required params: w, h
+	try{
 		$out_w = htmlspecialchars(addslashes(strip_tags(urldecode($_REQUEST['w']))),ENT_NOQUOTES, "UTF-8");
 		$out_h = htmlspecialchars(addslashes(strip_tags(urldecode($_REQUEST['h']))),ENT_NOQUOTES, "UTF-8");
-		if(!is_numeric($out_w) || $out_w < 1 || $out_w > $maxWidth+ $maxWidth*$tolerance || !is_numeric($out_h) || $out_h < 1 || $out_h > $maxHeight+$maxHeight*$tolerance) { exit; }
+		if(!is_numeric($out_w) || $out_w < 1 || $out_w > $maxWidth+ $maxWidth*$tolerance || !is_numeric($out_h) || $out_h < 1 || $out_h > $maxHeight+$maxHeight*$tolerance) {
+			$response =  "{success:false, error: \"resize($out_w,$out_h) attempting to exceed maximum height or width restrictions...\\n\\n Please edit program options to over-ride this feature.\"}"; 
+			break;
+		}//end if maxWH
 		list($in_w, $in_h) = getimagesize($editDirectory.$imgNameIndex);
 		if ($imgType == "jpg" || $imgType == "jpeg") $in = imagecreatefromjpeg($editDirectory.$imgNameIndex);
 		if ($imgType == "gif") $in = imagecreatefromgif($editDirectory.$imgNameIndex);
 		if ($imgType == "png") $in = imagecreatefrompng($editDirectory.$imgNameIndex);
+		if(!$in){
+			$response =  "{success:false, error: \"resize($in_w,$in_h)(*in) function failure...\"}";
+		}//end if out error
 		$out = imagecreatetruecolor($out_w, $out_h);
-		fastimagecopyresampled($out, $in, 0, 0, 0, 0, $out_w, $out_h, $in_w, $in_h);
 		if(!$out){
-			$response =  "{success:false, error: \"resize($out_w,$out_h) function failure...\"}";
+			$response =  "{success:false, error: \"resize($out_w,$out_h)(*out) function failure...\"}";
+		}//end if out error
+		$status = fastimagecopyresampled($out, $in, 0, 0, 0, 0, $out_w, $out_h, $in_w, $in_h);
+		if(!$out || !status){
+			$response =  "{success:false, error: \"resize($out_w,$out_h)(*out) function failure...\"}";
 		}//end if out error
 		if ($imgType == "jpg" || $imgType == "jpeg") imagejpeg($out, $editDirectory.$imgNameIndex, 100);
 		if ($imgType == "gif") imagegif($out,$editDirectory.$imgNameIndex);
 		if ($imgType == "png") imagepng($out,$editDirectory.$imgNameIndex);
 		imagedestroy($in);
 		imagedestroy($out);
+	}catch (Exception $e){
+		$response =  "{success:false, error: \"resize($out_w,$out_h)(*out) function failure...\n PHP Error: ".$e->getMessage()."\"}";
+	}//end try..catch
 		break;
 
 	case "rotate": // additional required params: degrees (90, 180 or 270)

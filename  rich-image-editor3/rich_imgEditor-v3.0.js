@@ -134,7 +134,7 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 
 			function onClose(){
 				if(rich_ImageEditor.imgName!= ""){
-					this.processImage({'action': "cleanUp", 'imageName': rich_ImageEditor.imgName});
+					this.processImage({'action': "cleanUp"});
 				}//end if 
 				rich_ImageEditor.imgName= "";
 				rich_ImageEditor.imgURL= "";
@@ -145,7 +145,7 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 				rich_ImageEditor.imgW_edit= 0;
 				rich_ImageEditor.imgH_edit= 0;
 				rich_ImageEditor.imgDATE= 0;
-				rich_ImageEditor.img_dateFlag=true;
+				rich_ImageEditor.img_dateFlag=false;
 				rich_ImageEditor.imgSize_editShowFlag= true;
 				rich_ImageEditor.imgSize_origShowFlag= false;
 				rich_ImageEditor.imgWH_editShowFlag= true;
@@ -361,7 +361,7 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 								iconCls:'RIE-restore',
 								scope: this,
 								handler: function(){
-									this.processImage({'action': "restoreIMG", 'imageName': rich_ImageEditor.imgName});
+									this.processImage({'action': "restoreIMG"});
 								},
 								disabled: true
 							}, {
@@ -370,7 +370,7 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 								iconCls:'RIE-refresh',
 								scope: this,
 								handler: function(){
-									this.processImage({'action': "viewActive", 'imageName': rich_ImageEditor.imgName});
+									this.processImage({'action': "viewActive"});
 								},
 								disabled: true
 							}, {
@@ -408,55 +408,55 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 								text: 'Grayscale',
 								scope: this,
 								handler: function(){
-									this.processImage({'action': "grayscale", 'imageName': rich_ImageEditor.imgName});
+									this.processImage({'action': "grayscale"});
 								}
 							}, {
 								text: 'Sepia',
 								scope: this,
 								handler: function(){
-									this.processImage({'action': "sepia", 'imageName': rich_ImageEditor.imgName});
+									this.processImage({'action': "sepia"});
 								}
 							}, {
 								text: 'Pencil',
 								scope: this,
 								handler: function(){
-									this.processImage({'action': "pencil", 'imageName': rich_ImageEditor.imgName});
+									this.processImage({'action': "pencil"});
 								}
 							}, {
 								text: 'Emboss',
 								scope: this,
 								handler: function(){
-									this.processImage({'action': "emboss", 'imageName': rich_ImageEditor.imgName});
+									this.processImage({'action': "emboss"});
 								}
 							}, {
 								text: 'Blur',
 								scope: this,
 								handler: function(){
-									this.processImage({'action': "blur", 'imageName': rich_ImageEditor.imgName});
+									this.processImage({'action': "blur"});
 								}
 							}, {
 								text: 'Smooth',
 								scope: this,
 								handler: function(){
-									this.processImage({'action': "smooth", 'imageName': rich_ImageEditor.imgName});
+									this.processImage({'action': "smooth"});
 								}
 							}, {
 								text: 'Invert',
 								scope: this,
 								handler: function(){
-									this.processImage({'action': "invert", 'imageName': rich_ImageEditor.imgName});
+									this.processImage({'action': "invert"});
 								}
 							}, {
 								text: 'Brighten',
 								scope: this,
 								handler: function(){
-									this.processImage({'action': "brighten", 'amt': 10, 'imageName': rich_ImageEditor.imgName});
+									this.processImage({'action': "brighten", 'amt': 10});
 								}
 							}, {
 								text: 'Darken',
 								scope: this,
 								handler: function(){
-									this.processImage({'action': "brighten", 'amt': -10, 'imageName': rich_ImageEditor.imgName});
+									this.processImage({'action': "brighten", 'amt': -10});
 								}
 							}
 						]
@@ -530,7 +530,7 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 					disabled: true,
 					scope: this,
 					handler: function(){
-						this.processImage({'action': "rotate", 'degrees': rich_ImageEditor.func_rotateDef, 'imageName': rich_ImageEditor.imgName});
+						this.processImage({'action': "rotate", 'degrees': rich_ImageEditor.func_rotateDef});
 					},
 					menu: {
 						items: [
@@ -539,21 +539,21 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 								scope: this,
 								handler: function(){
 									rich_ImageEditor.func_rotateDef=90;
-									this.processImage({'action': "rotate", 'degrees': 90, 'imageName': rich_ImageEditor.imgName});
+									this.processImage({'action': "rotate", 'degrees': 90});
 								}
 							}, {
 								text: '180&deg;',
 								scope: this,
 								handler: function(){
 									rich_ImageEditor.func_rotateDef=180;
-									this.processImage({'action': "rotate", 'degrees': 180, 'imageName': rich_ImageEditor.imgName});
+									this.processImage({'action': "rotate", 'degrees': 180});
 								}
 							}, {
 								text: '270&deg; (-90&deg;)',
 								scope: this,
 								handler: function(){
 									rich_ImageEditor.func_rotateDef=270;
-									this.processImage({'action': "rotate", 'degrees': 270, 'imageName': rich_ImageEditor.imgName});
+									this.processImage({'action': "rotate", 'degrees': 270});
 								}
 							}
 						]
@@ -568,7 +568,7 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 					disabled: true,
 					scope: this,
 					handler: function(){
-						this.processImage({'action': "mirror", 'direction': rich_ImageEditor.func_mirrorDef, 'imageName': rich_ImageEditor.imgName});
+						this.processImage({'action': "mirror", 'direction': rich_ImageEditor.func_mirrorDef});
 					},
 					menu: { 
 						items: [
@@ -578,7 +578,7 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 								scope: this,
 								handler: function(){
 									rich_ImageEditor.func_mirrorDef="flop";
-									this.processImage({'action': "mirror", 'direction': "flop", 'imageName': rich_ImageEditor.imgName});
+									this.processImage({'action': "mirror", 'direction': "flop"});
 								}
 							}, {
 								text: 'Horizontal (Flip)',
@@ -586,7 +586,7 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 								scope: this,
 								handler: function(){
 									rich_ImageEditor.func_mirrorDef="flip";
-									this.processImage({'action': "mirror", 'direction': "flip", 'imageName': rich_ImageEditor.imgName});
+									this.processImage({'action': "mirror", 'direction': "flip"});
 								}
 							}
 						]
@@ -603,7 +603,7 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 		}//end if rImgEdwin
 		rImgEdwin.show();
 		//listen events go here:
-		rImgEdwin.on("hide", onClose,  this);
+		//rImgEdwin.on("hide", onClose,  this);
 		rImgEdwin.on("resize", this.updateCanvas,  this);
 		this.updateCanvas();//recalc win size...
 	},//end function this.createWindow
@@ -843,7 +843,6 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 						if(imgName!=""){
 							//remove local pathway from imgName (don't need it) --IE bug?
 							imgName=imgName.substring(imgName.lastIndexOf("\\")+1,imgName.length);
-							//Ext.get('rie_upFILE').dom.disabled=true;
 							Ext.getCmp('rie_uploadFormButton_Upload').disable();
 							this.uploadDialog.setHeight(140);
 							if(rie_pb){
@@ -860,12 +859,12 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 							rie_uploadImageForm.getForm().submit({
 								scope: this,
 								success: function(form, action){
-									//store.load();
 									rie_pb.reset();
+									rich_ImageEditor.imgName= imgName;
 									rie_pb.updateText(imgName+" Uploaded! ");
 									Ext.getCmp('rie_uploadFormButton_Upload').enable();
 									this.uploadDialog.hide();
-									this.processImage({'action': "viewActive", 'imageName': imgName});
+									this.processImage({'action': "viewActive"});
 							} ,
 								failure: 	function( form, action){
 									var response = Ext.util.JSON.decode(action.response.responseText);
@@ -890,7 +889,6 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 					text: 'Cancel',
 					id: 'rie_uploadFormButton_Cancel',
 					handler: function(){
-						//Ext.get('rie_upImgForm').dom.reset(); //rie_uploadImageForm.getForm()
 						this.uploadDialog.hide();
 					},
 					scope: this
@@ -1095,7 +1093,7 @@ items: [{
 						if(h!= rich_ImageEditor.imgH_edit || w != rich_ImageEditor.imgW_edit){
 							if(h<=0) h=rich_ImageEditor.imgH_edit;
 							if(w<=0) w=rich_ImageEditor.imgW_edit;
-							this.processImage({'action': "resize", 'w': w, 'h': h, 'imageName': rich_ImageEditor.imgName});
+							this.processImage({'action': "resize", 'w': w, 'h': h});
 						}//end if dimen changed
 						try{
 						var ch=Ext.get('imgProp_cH').dom.value;
@@ -1176,11 +1174,16 @@ items: [{
 
 	rie_Undo: function(){
 		rich_ImageEditor.historyIndex--;
-		this.processImage({'action': "undo", 'imageName': rich_ImageEditor.imgName});
+		if(rich_ImageEditor.histroyIndex<0) rich_ImageEditor.histroyIndex=0;
+		this.processImage({'action': "undo"});
 	},//end function rie_Undo
 
-	rie_Redo: function(){//TODO: fix redo by adding a flag to prevent hist. reindex...
-		this.processImage(rich_ImageEditor.historyAction[rich_ImageEditor.historyIndex+1]);
+	rie_Redo: function(){
+		rich_ImageEditor.historyIndex++;
+		if(rich_ImageEditor.histroyIndex>rich_ImageEditor.historyAction.length) rich_ImageEditor.histroyIndex=rich_ImageEditor.historyAction.length;
+		//add indexing override param
+		rich_ImageEditor.historyAction[rich_ImageEditor.historyIndex].redoFlag=true;
+		this.processImage(rich_ImageEditor.historyAction[rich_ImageEditor.historyIndex]);
 	},//end function rie_Undo
 
 	rie_AboutDialog : function(){
@@ -1365,7 +1368,8 @@ items: [{
 			   imageData.lastFtnCall.action!="restoreIMG" &&
 			   imageData.lastFtnCall.action!="viewActive" &&
 			   imageData.lastFtnCall.action!="save" &&
-			   imageData.lastFtnCall.action!=""){
+			   imageData.lastFtnCall.action!="" &&
+			   imageData.lastFtnCall.redoFlag!=true){
 				rich_ImageEditor.historyIndex++;
 				var tempHist=new Array();
 				for(x=0; x<rich_ImageEditor.historyIndex;x++){
@@ -1410,7 +1414,7 @@ items: [{
 		if(rich_ImageEditor.h<=0) rich_ImageEditor.h=imageData.h;
 		if(rich_ImageEditor.imgName!= imageData.name && rich_ImageEditor.imgName!= ""){
 			//remove previous image from edit dir
-			this.processImage({'action': "cleanUp", 'imageName': rich_ImageEditor.imgName});
+			this.processImage({'action': "cleanUp"});
 			rich_ImageEditor.w= imageData.w; //canvas matches image
 			rich_ImageEditor.h= imageData.h;
 			rich_ImageEditor.cursorStyle="default";
@@ -1458,15 +1462,21 @@ items: [{
 			iconCls: '',
 			text: "Sent server request: "+params.action
 		});
+		//add imageName to params
+		params.imageName=rich_ImageEditor.imgName;
 		params.Hindex=rich_ImageEditor.historyIndex;
 		this.sendAjaxRequest(
 			params,
 			function(result, request){
 				var response = Ext.util.JSON.decode(result.responseText);
 				if(response.error){
+				var sb = Ext.getCmp("rich_imgEditor-win-statusbar");
+				sb.setStatus({
+					iconCls: 'x-status-error',
+					text: "An error occured on the server... Please try again."
+				});
 					this.showErrorMsg(response.error);
 				}else{ 
-//TODO: finish this function!
 					imageData=new Ext.data.Store({
 							lastFtnCall: params,
 							name: response.imageName
@@ -1484,6 +1494,7 @@ items: [{
 							,url: response.url
 							,imgZoom: 100 * response.zoomRatio
 							,imgAspectRatio: response.imgAspectRatio
+							,imgRez: response.imgRez
 					});
 					if(params.action!="cleanUp" &&
 					   	params.action!="save"
@@ -1493,12 +1504,12 @@ items: [{
 				}//end if response.error
 			},//end sucess function
 			function(result, request){
-				this.showErrorMsg(rich_ImageEditor.connErrMsg);
 				var sb = Ext.getCmp("rich_imgEditor-win-statusbar");
 				sb.setStatus({
 					iconCls: 'x-status-error',
 					text: rich_ImageEditor.connErrMsg
 				});
+				this.showErrorMsg(rich_ImageEditor.connErrMsg);
 			}//end failure function
 			,aURL
 		);    
@@ -1813,6 +1824,13 @@ QoDesk.rich_imgEditor.ImageViewer.prototype = {
 					/** inform callee of current data */
 					//if (typeof(this.cb) === "function") 
 					this.cb.displayImage(data);
+					try{
+						var sb = Ext.getCmp("rich_imgEditor-win-statusbar");
+						sb.setStatus({
+							iconCls: '',
+							text: "Opening image..."
+						});
+					}catch(e){}
 				}
 			}
 		});
