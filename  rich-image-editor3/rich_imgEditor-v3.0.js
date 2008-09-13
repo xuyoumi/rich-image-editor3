@@ -1429,6 +1429,7 @@ items: [{
 			rich_ImageEditor.imgSize_edit= imageData.size/1000;
 			rich_ImageEditor.imgW_orig= imageData.w;
 			rich_ImageEditor.imgH_orig=imageData.h;
+			rich_ImageEditor.imgEXIF="< Please \"Reload Current\" image to load EXIF data >";
 		}//end if imageData.size
 		rich_ImageEditor.imgRez=imageData.imgRez;
 		rich_ImageEditor.imgW_edit= imageData.w;
