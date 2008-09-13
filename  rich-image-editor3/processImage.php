@@ -15,6 +15,20 @@ require_once("imgFunctions.php");
 /// TODO: getImage.php needs to verify caller, sessID before delivery of image...
 
 
+function prMultiDemArray($arrayName,  $prevDemName=""){
+//recursive function to return (as string) array values in a "first.second.third = value" format
+	$out="";
+	foreach($arrayName as $key => $val){
+		if(is_array($val)){
+			$out.=prMultiDemArray($val,  ($prevDemName!= ""? "$prevDemName.": "").$key);
+		}else{
+			$out.= ($prevDemName!= ""? "$prevDemName.": "")."$key: $val<br />";
+		}//end if is_array:key
+	}//end for arrayName
+	return($out);
+}//end function prMultiDemArray
+
+
 $requiredImageFileType="/\.(jpg|jpeg|gif|png)$/";
 $imageTypeErrMsg = "JPG, JPEG, GIF, or PNG";
 //$requiredImageFileType="/\.jpg$/";
@@ -419,11 +433,21 @@ if(!empty($imageName) && !strripos($response,"error")){
 	$fileMOD=filemtime($originalDirectory.$imageName)*1000;
 	//get ratio when keeping width at max pixels
 	$imgAspectRatio = ($h < $w)? ($w / $h) : ($h / $w);
-	$imgR=getJPEGresolution($filename);
+	$imgR=getJPEGresolution($editDirectory.$imgNameIndex);
 	$imgRez=($imgR===false? $imgRez: $imgR['xDPI']);
+
+	$exif = @exif_read_data($editDirectory.$imgNameIndex, 0, true, false);
+	if($exif === false || empty($exif)){
+		$exif= "&lt; none available &gt;<br />";
+	}else{
+		$exif= addslashes(prMultiDemArray($exif));
+		$exif= str_replace("\n", "", $exif);
+		$exif= str_replace("\r", "", $exif);
+	}//end if exif available
+
 	$memUse=memory_get_usage() - $startMEM;
 
-	$response= '{success:true,imageFound:true,imageName:"'.$imageName.'",w:'.$w.',h:'.$h.',ow:'.$ow.',oh:'.$oh.',imgSize_orig:'.$imgSize_orig.',imgSize_edit:'.$imgSize_edit.',maxWidth:'.$maxWidth.',maxHeight:'.$maxHeight.',tolerance:'.$tolerance.',zoomRatio:'.$zoomRatio.',url:"'.$url.'", lastmod: '.$fileMOD.',imgRez:'.$imgRez.',imgAspectRatio:'.$imgAspectRatio.',memUse:'.$memUse.',hIndex:'.$Hindex.',imgNameIndex:"'.$imgNameIndex.'"}';
+	$response= '{success:true,imageFound:true,imageName:"'.$imageName.'",w:'.$w.',h:'.$h.',ow:'.$ow.',oh:'.$oh.',imgSize_orig:'.$imgSize_orig.',imgSize_edit:'.$imgSize_edit.',maxWidth:'.$maxWidth.',maxHeight:'.$maxHeight.',tolerance:'.$tolerance.',zoomRatio:'.$zoomRatio.',url:"'.$url.'", lastmod: '.$fileMOD.',imgRez:'.$imgRez.',imgAspectRatio:'.$imgAspectRatio.',memUse:'.$memUse.',hIndex:'.$Hindex.',exif:"'.$exif.'"}';
 }//end if imageName
 
 	header("Content-Length: ".strlen($response));
