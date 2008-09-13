@@ -10,6 +10,8 @@
 //chdir(dirname((strstr($_SERVER["SCRIPT_FILENAME"], $_SERVER["PHP_SELF"]) ? $_SERVER["SCRIPT_FILENAME"] : $_SERVER["PATH_TRANSLATED"])));
 
 //TODO: add save-as feature==> output file as a different image type
+error_reporting(E_ERROR | E_PARSE); //limit error output
+mb_internal_encoding("UTF-8");// add support for Asian languages
 
 require_once("imgFunctions.php");
 
@@ -22,11 +24,10 @@ $dl = htmlspecialchars(addslashes(strip_tags(urldecode($_REQUEST['dl']))),ENT_NO
 
 //history index for un/redo functions
 $Hindex = htmlspecialchars(addslashes(strip_tags(urldecode($_REQUEST['Hindex']))),ENT_NOQUOTES, "UTF-8");
-if($Hindex<0) $Hindex=0;
+if($Hindex<0 || !is_numeric($Hindex)) $Hindex=0;
 
-$imgType = strtolower(substr($imageName, strrpos($imageName, ".")-strlen($imageName)+1 ));
-$imgNameIndex=substr($imageName, 0,strrpos($imageName, "."));
-$imgNameIndex.="____[$Hindex].$imgType";
+$imgType = mb_substr($imageName, strrpos($imageName, ".")-strlen($imageName)+1 );
+$imgNameIndex=mb_substr($imageName, 0,strrpos($imageName, "."))."____[$Hindex].$imgType";
 
 if(empty($imageName) || !file_exists($originalDirectory.$imageName)){
 	header("Content-Type: text/plain");
@@ -38,17 +39,17 @@ if(empty($imageName) || !file_exists($originalDirectory.$imageName)){
 }//end if file_exist
 
 if(!file_exists($editDirectory.$imgNameIndex)){
-	if(!file_exists($editDirectory.substr($imageName, 0,strrpos($imageName, "."))."____[".($Hindex-1)."].$imgType")){
-		copy($originalDirectory.$imageName, $editDirectory.$imgNameIndex) || die("{success:false,Error:\"copy failed @\'$editDirectory$imageName\'\"}");
+	if(!file_exists($editDirectory.basename($imageName, ".$imgType")."____[".($Hindex-1)."].$imgType")){
+		copy($originalDirectory.$imageName, $editDirectory.$imgNameIndex) || die("{success:false,Error:\"copy failed @\'$imageName\'\"}");
 	}else{
-		@copy($editDirectory.substr($imageName, 0,strrpos($imageName, "."))."____[".($Hindex-1)."].$imgType", $editDirectory.$imgNameIndex);
+		@copy($editDirectory.basename($imageName, ".$imgType")."____[".($Hindex-1)."].$imgType", $editDirectory.$imgNameIndex);
 	}//end if can't find org.pic
 }//end if not img found
 
 	$memStat =setMemoryForImage($editDirectory.$imgNameIndex);// update Memory config!
 	if($memStat===false) {echo "{success:false, error:\"Not enough server memory to process this image...<br><BR>memoryLimit=".ini_get('memory_limit')."\"}";exit;}
 
-switch($imgType){
+switch(strtolower($imgType)){
 	case "jpg":
 	case "jpeg":
 		$contentType="image/jpeg";
@@ -97,6 +98,11 @@ if($dl==1){//download?
 	$imageName=$imageName.rand()."".date("U").".".$imgType;
 	$dl="inline";
 }//end if dl
+header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+header("Cache-Control: no-store, no-cache, must-revalidate");
+header("Cache-Control: post-check=0, pre-check=0", false);
+header("Pragma: no-cache");
 header("Content-Type: $contentType");
 header("Content-Length: $imageDataLength");
 header("Content-Disposition: $dl; filename=$imageName"); //
