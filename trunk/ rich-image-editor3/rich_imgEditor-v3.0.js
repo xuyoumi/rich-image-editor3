@@ -816,7 +816,7 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 				autoHeight: true,
 				border: false,
 				formId: 'rie_upImgForm',
-				title: '',//rich_ImageEditor.imgUpDialogTitle,
+				title: '',
 				bodyStyle: 'padding:5px 5px 0',
 				width: '100%',
 				defaults: {width: 185},
@@ -860,9 +860,9 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 								scope: this,
 								success: function(form, action){
 									rie_pb.reset();
-									rich_ImageEditor.imgName= imgName;
+									this.processImage({'action': "cleanUp"});
+									rich_ImageEditor.imgName=imgName;
 									rie_pb.updateText(imgName+" Uploaded! ");
-									Ext.getCmp('rie_uploadFormButton_Upload').enable();
 									this.uploadDialog.hide();
 									this.processImage({'action': "viewActive"});
 							} ,
@@ -903,7 +903,7 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 				width:370,
 				height:105,
 				closeAction: 'hide',
-				resizable: false,
+				//resizable: false,
 				plain: true,
 				items: [rie_uploadImageForm],
 				modal: true
@@ -917,6 +917,7 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 			this.uploadDialog.add(rie_pb);
 		}else{//window & components already rendered
 			this.uploadDialog.setHeight(105);
+			//this.uploadDialog.setWidth(370);
 			//clear out the old field values:
 			Ext.get('rie_upFILE').dom.value = "";
 			Ext.get('rie_upFILE').dom.disabled = false;
@@ -926,7 +927,7 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 			rie_pb.updateText("Ready");
 			rie_pb.hide();
 		}
-			Ext.getCmp('rie_uploadFormButton_Upload').enable();
+		Ext.getCmp('rie_uploadFormButton_Upload').enable();
 		this.uploadDialog.toFront();//make sure it's on top
 	},//end function this.rie_uploadImageDialog
 
@@ -1470,11 +1471,11 @@ items: [{
 			function(result, request){
 				var response = Ext.util.JSON.decode(result.responseText);
 				if(response.error){
-				var sb = Ext.getCmp("rich_imgEditor-win-statusbar");
-				sb.setStatus({
-					iconCls: 'x-status-error',
-					text: "An error occured on the server... Please try again."
-				});
+					var sb = Ext.getCmp("rich_imgEditor-win-statusbar");
+					sb.setStatus({
+						iconCls: 'x-status-error',
+						text: "An error occured on the server... Please try again."
+					});
 					this.showErrorMsg(response.error);
 				}else{ 
 					imageData=new Ext.data.Store({

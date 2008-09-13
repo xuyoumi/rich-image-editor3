@@ -320,4 +320,187 @@ function ImageStringWrap($image, $font, $x, $y, $text, $color, $maxwidth){
 }
 
 /***************************************************/
+/*
+ * Get GIF image data
+ * Returns an array of data, including GIF image type, and
+ * the width and height of the image, plus transparent colour
+ * details and much more.
+ *
+ * This function takes one argument, $file, a direct link to the image in
+ * question. Perhaps in future versions it will get the file from an image
+ * resource, but for now, it will have to do.
+This function returns something like:
+
+Array
+(
+    [version] => GIF89a
+    [file_reg_version] => 89a
+    [total_pallete_colours] => 251
+    [width] => 100
+    [height] => 100
+    [transparent_color_id] => 16
+    [transparent_color_values] => Array
+        (
+            [red] => 0
+            [green] => 0
+            [blue] => 0
+            [alpha] => 127
+        )
+
+)
+ */
+function fetch_gif_data($file) {
+ 
+    /*
+     * First, we need to get the contents of the file in question, or we print
+     * a warning using trigger_error().
+     */
+    $file_data = @file_get_contents($file) or trigger_error("File $file does not exist", E_USER_WARNING);
+   
+    /*
+     * Now we need to fetch the gif image's version. We'll use strpos to fetch
+     * gif89a, gif87a or if we don't get that then we will print an error.
+     */
+    $image_type = strpos($file_data, "g");
+   
+    /*
+     * Now we check to see wether it is actually a GIF image, as it may not be
+     * an image and if this is the case, problems could occur.
+     */
+    if($image_type === false) {
+      trigger_error("File $file is not a gif89a or gif87a compatible image", E_USER_ERROR);
+    }
+   
+    /*
+     * Now, we need to fetch the image type by fetching the text at a certain
+     * position, using PHP's function substr.
+     */
+    $image_info[version] = substr($file_data, 0, 6);
+    $image_info[file_reg_version] = substr($file_data, 3, 3);
+   
+    /*
+     * Let's get the total number of colours in this image using a special
+     * piece of code, which fetches all the image's colours.
+     */
+    $im_gif = imagecreatefromgif($file);
+    $image_info[total_pallete_colours] = imagecolorstotal($im_gif);
+   
+    /*
+     * Now, the next thing we need to do is get the width and height of the
+     * image in question by using imagesx(); and imagesy();
+     */
+    $image_info[width] = imagesx($im_gif);
+    $image_info[height] = imagesy($im_gif);
+    
+    /*
+     * Let's fetch the transparent color of the image, if there is one.
+     */
+    $id = imagecolortransparent($im_gif);
+    $image_info[transparent_color_id] = $id;
+    $image_info[transparent_color_values] = imagecolorsforindex($im_gif, $id);
+   
+    /*
+     * Now, we return all the data.
+     */
+    return $image_info;
+}//end function fetch_gif_data
+
+
+
+function imagebmp ($im, $fn = false){
+/*
+It works the same way as regular imagejpeg/imagepng do and only 
+supports GD2.0 true colour bitmaps (which is what's required by ExcelWriter).
+*/
+    if (!$im) return false;
+           
+    if ($fn === false) $fn = 'php://output';
+    $f = fopen ($fn, "w");
+    if (!$f) return false;
+           
+    //Image dimensions
+    $biWidth = imagesx ($im);
+    $biHeight = imagesy ($im);
+    $biBPLine = $biWidth * 3;
+    $biStride = ($biBPLine + 3) & ~3;
+    $biSizeImage = $biStride * $biHeight;
+    $bfOffBits = 54;
+    $bfSize = $bfOffBits + $biSizeImage;
+           
+    //BITMAPFILEHEADER
+    fwrite ($f, 'BM', 2);
+    fwrite ($f, pack ('VvvV', $bfSize, 0, 0, $bfOffBits));
+           
+    //BITMAPINFO (BITMAPINFOHEADER)
+    fwrite ($f, pack ('VVVvvVVVVVV', 40, $biWidth, $biHeight, 1, 24, 0, $biSizeImage, 0, 0, 0, 0));
+           
+    $numpad = $biStride - $biBPLine;
+    for ($y = $biHeight - 1; $y >= 0; --$y){
+        for ($x = 0; $x < $biWidth; ++$x){
+            $col = imagecolorat ($im, $x, $y);
+            fwrite ($f, pack ('V', $col), 3);
+        }
+        for ($i = 0; $i < $numpad; ++$i) fwrite ($f, pack ('C', 0));
+    }
+    fclose ($f);
+    return true;
+}//end function imagebmp
+
+function getJPEGresolution($filename){
+	if(exif_imagetype( $filename)!= IMAGETYPE_JPEG) return(false);
+	ini_set('exif.encode_unicode', 'UTF-8');
+	$outRez=array();
+	// Read the file
+	$exif = exif_read_data($filename, 'IFD0');
+	
+	ob_start(); // start a new output buffer
+	$image   = file_get_contents($filename);
+	
+	// grab DPI information from the JPG header
+	$outRez["xDPI"] = (int)(ord($image[15])>0? ord($image[15]) : $exif['XResolution'] );
+	$outRez["yDPI"] = (int)(ord($image[17])>0? ord($image[17]) : $exif['YResolution'] );
+	ob_end_clean(); // stop this output buffer
+
+	//correct output if header doesn't contain dpi info:: use exif info instead
+	$outRez["xDPI"] = ($outRez["xDPI"]>0? $outRez["xDPI"] : $exif['THUMBNAIL']['XResolution'] );
+	$outRez["yDPI"] = ($outRez["yDPI"]>0? $outRez["yDPI"] : $exif['THUMBNAIL']['YResolution'] );
+	
+	//double check values; make sure it's just a number and not "72/1" ...
+	if(!is_numeric($outRez["xDPI"])) $outRez["xDPI"] = (int)substr($outRez["xDPI"], 0, strpos($outRez["xDPI"],"/",1));
+	if(!is_numeric($outRez["yDPI"])) $outRez["yDPI"] = (int)substr($outRez["yDPI"], 0, strpos($outRez["yDPI"],"/",1));
+
+	//xDPI and yDPI should equal in value... but we output both anyway...
+	return($outRez);
+}//end function getJPEGresolution
+
+function setJPEGresolution($filename){
+/*
+this code is experimental!  see http://jp.php.net/imagejpeg (xavi at lapalomera dot com)
+
+  imagejpeg($image, $file, 75);
+
+  // Change DPI
+  $dpi_x   = 150;
+  $dpi_y   = 150;
+ 
+  // Read the file
+  $size    = filesize($filename);
+  $image   = file_get_contents($filename);
+
+  // Update DPI information in the JPG header
+  $image[13] = chr(1);
+  $image[14] = chr(floor($dpi_x/255));
+  $image[15] = chr(      $dpi_x%255);
+  $image[16] = chr(floor($dpi_y/255));
+  $image[17] = chr(      $dpi_y%255);
+
+  // Write the new JPG
+  $f = fopen($filename, 'w');
+  fwrite($f, $msg, $size);
+  fclose($f);
+
+*/
+}//end function setGPEGresolution
+
+
 ?>
