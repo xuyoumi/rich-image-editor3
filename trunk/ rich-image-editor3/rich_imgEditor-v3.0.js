@@ -66,6 +66,7 @@ var  rich_ImageEditor = new Ext.data.Store({
 		imgSize_edit: 0,
 		imgDATE: 0,
 		imgRez: 72,
+		imgEXIF: "",		//exif info...
 		imgName: '',
 		imgURL: '',		//image pathway on server
 		imgSize_editShowFlag: true,
@@ -732,6 +733,26 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 							name: 'imgProp_eFS'
 						}
 					]
+				},{
+					xtype:'fieldset',
+					title: 'Image EXIF data',
+					collapsible: true,
+					collapsed: true,
+					autoHeight:true,
+					defaultType: 'textfield',
+					items :[{
+							xtype: 'box',
+							autoEl: {
+								tag: 'textarea', 
+								id:'imgProp_oIMGexif',
+								name: 'imgProp_oIMGexif',
+								style: "text-align: left;",
+								readonly: "readonly",
+								wrap: "off",
+								cols: 44, 
+								rows: 9
+							}
+					}]
 				}]
 			});
 		}//end if rie_imgPropForm
@@ -799,6 +820,7 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 			params=rie_imgAspectCalc(params);
 			rich_ImageEditor.imgAspectRatio=params.myratio;
 			Ext.get('imgProp_eA').dom.value = rich_ImageEditor.imgAspectRatio;
+			Ext.get('imgProp_oIMGexif').dom.value = ReplaceString("<br />", "\n", rich_ImageEditor.imgEXIF, true);
 			Ext.get('imgProp_eIMG').dom.width = params.w;
 			Ext.get('imgProp_eIMG').dom.height = params.h;
 		}//end if this.imgProp
@@ -1401,6 +1423,7 @@ items: [{
 			rich_ImageEditor.imgWH_tolerance=imageData.imgWH_tolerance;
 			rich_ImageEditor.imgZoom=imageData.imgZoom;
 			rich_ImageEditor.imgAspectRatio=imageData.imgAspectRatio;
+			rich_ImageEditor.imgEXIF=imageData.imgEXIF;
 		}else{//loaded by open cmd
 			rich_ImageEditor.imgSize_orig= imageData.size/1000;
 			rich_ImageEditor.imgSize_edit= imageData.size/1000;
@@ -1496,6 +1519,7 @@ items: [{
 							,imgZoom: 100 * response.zoomRatio
 							,imgAspectRatio: response.imgAspectRatio
 							,imgRez: response.imgRez
+							,imgEXIF: response.exif
 					});
 					if(params.action!="cleanUp" &&
 					   	params.action!="save"
@@ -1897,3 +1921,18 @@ function rie_imgAspectCalc(/* obj - construct */ params){
 	params.myratio=myratio;
 	return(params);
 }//end function rie_imgAspectCalc
+
+function ReplaceString(/*String*/ SearchStr,/*String*/ InsertStr,/*String*/ OriginalStr,/*boolean*/ mode){//v2.01
+// Replaces the first 'SearchStr' match with 'InsertStr' in 'OriginalStr'
+// mode (true/false) = Replace all occurances
+ if(SearchStr!="" || SearchStr!=null){
+   for(var r=0;r<OriginalStr.length;r++){
+     if(OriginalStr.substring(r,r+SearchStr.length)==SearchStr){
+       var TempString=OriginalStr;
+       OriginalStr=TempString.substring(0,r)+InsertStr+TempString.substring(r+SearchStr.length,TempString.length);
+       if(!mode) break;//for
+     }//end if search found
+   }//end for r
+ }//end if SearchStr!=""
+ return(OriginalStr);
+}//end function ReplaceString
