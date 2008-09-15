@@ -228,7 +228,16 @@
 
 
 /* Main Window/Canvas Styles */
-
+#edRulerX{
+	height:15px;
+	width: 999px;
+	overflow:hidden;
+}
+#edRulerY{
+	height: 999px;
+	width:15px;
+	overflow:hidden;
+}
 #ImageEditorContainer {
 	padding: 0px 3px 3px 3px;
 	font-size: 10px;
