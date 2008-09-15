@@ -49,10 +49,6 @@ var  rich_ImageEditor = new Ext.data.Store({
 		validDimension	: 	/^\d{1,4}$/,
 		w: 0,		//canvas width
 		h: 0,		//canvas height
-		X: 0,		//cursor track
-		Y: 0,
-		startX: 0,	//cursor start pos
-		startY: 0,
 		colorBg: "FFFFFF",
 		colorFt:  "000000",
 		imgMAXh : 450,
@@ -80,8 +76,22 @@ var  rich_ImageEditor = new Ext.data.Store({
 		imgAspectFlag: true,	//maintain Aspect Ratio?
 		//loaderImage: document.createElement("img"),
 		keyBoardBuffer: '',		//used to store shortcut keys for listeners
-		getDesktop: null,
+		mouseStore: {
+			startX: 0,	//cursor start pos; stored on mouseDown
+			startY: 0,
+			X: 0,		//cursor track
+			Y: 0,
+			isLeftClick:	false,
+			isMiddleClick:	false,
+			isRightClick: 	false,
+			isCtrlKey:		false,
+			isAltKey:		false,
+			isShiftKey:		false,
+			pressedKeyCode:	0,
+			isMouseDown:	false
+			},
 		cursorStyle: "default",
+		getDesktop: null,
 		historyIndex:0,			//count of actions performed on image; used for undo/redo
 		historyAction: new Array(""), //stores the name of last action; uses historyIndex for index
 		imgChooser: null		//obj holder for open img dialog
@@ -499,9 +509,10 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 					id: 'rich_imgEditor-toolbar_Hand',
 					iconCls:'RIE-imgHand',
 					enableToggle: true,
-					toggleHandler: null, //TODO: write& attach Hand function
+					toggleHandler: function(){this.mouseHand(null);}, //TODO: write& attach Hand function
 					pressed: false,
-					disabled: true
+					disabled: true,
+					scope: this
 				}, ' ', {
 					text: 'Marquee',
 					tooltip: 'Marquee Tool<br><b>Note:</b>  Creates a selection around an area dragged by the mouse...<br><br><i>ShortCut Key:</i>  <b><CODE>M</CODE></b>',
@@ -510,7 +521,8 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 					enableToggle: true,
 					toggleHandler: null, //TODO: write& attach marquee function
 					pressed: false,
-					disabled: true
+					disabled: true,
+					scope: this
 				}, ' ', {
 					text: 'Crop',
 					tooltip: 'Crop Tool<br><b>Note:</b>  Reduces the image down the to selected area<br><br><i>ShortCut Key:</i>  <b><CODE>C</CODE></b>',
@@ -519,7 +531,8 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 					enableToggle: true,
 					toggleHandler: null, //TODO: write& attach crop function
 					pressed: false,
-					disabled: true
+					disabled: true,
+					scope: this
 				}, ' ', '-', ' ', {
 					text: 'Rotate',
 					xtype:'tbsplit',
@@ -606,7 +619,7 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 		//listen events go here:
 		//rImgEdwin.on("hide", onClose,  this);
 		rImgEdwin.on("resize", this.updateCanvas,  this);
-		this.updateCanvas();//recalc win size...
+		rImgEdwin.on("load", this.updateCanvas,  this, {single: true, delay: 299});
 	},//end function this.createWindow
 
 	showDialog : function(){
@@ -1353,7 +1366,14 @@ items: [{
 		var winHeight = thisApp.getInnerHeight();
 		var editorWindow = document.getElementById("ImageEditorWindow");
 		var editorImage = document.getElementById("ImageEditorCanvas");
+		var rulerX=document.getElementById("edRuleX");
+		var rulerY=document.getElementById("edRuleY");
 		var imgStyle_overflow="hidden";
+		editorWindow.style.position="relative";
+		rulerX.style.position="absolute";
+		rulerX.style.cursor="default";
+		rulerY.style.position="absolute";
+		rulerY.style.cursor="default";
 //		if(rich_ImageEditor.imgH_edit>winHeight || rich_ImageEditor.imgW_edit>winWidth){
 		if(rich_ImageEditor.h>winHeight || rich_ImageEditor.w>winWidth){
 			//scroll is based on canvas size instead of image
@@ -1361,13 +1381,38 @@ items: [{
 		}else{
 			editorWindow.scrollLeft=0;
 			editorWindow.scrollTop=0;
+			rulerX.scrollLeft=0;
+			rulerY.scrollTop=0;
 		}//end if pic> canvas size
+		rulerY.style.height=(winHeight-30-4)+"px";
+		rulerX.style.width=(winWidth-30-3)+"px";
 		editorImage.style.height=(winHeight-15-4)+"px";
 		editorImage.style.width=(winWidth-15-3)+"px";
 		editorImage.style.overflow=imgStyle_overflow;
 		editorWindow.style.width=(winWidth-4)+"px";
 		editorWindow.style.height=(winHeight-3)+"px";
 		editorImage.style.cursor = rich_ImageEditor.cursorStyle;
+
+		editorImage.style.left="15px";
+		editorImage.style.top="15px";
+		if(!editorWindow.style.left || isNaN(editorWindow.style.left)) editorWindow.style.left=editorWindow.offsetLeft+"px";
+		if(!editorWindow.style.top || isNaN(editorWindow.style.top)) editorWindow.style.top=editorWindow.offsetTop+"px";
+		if(isNaN(parseInt(editorWindow.style.left))) editorWindow.style.left="0px";
+		if(isNaN(parseInt(editorWindow.style.top))) editorWindow.style.top="0px";
+		if(!rulerX.style.left || isNaN(rulerX.style.left)) rulerX.style.left=rulerX.offsetLeft+"px";
+		if(!rulerX.style.top || isNaN(rulerX.style.top)) rulerX.style.top=rulerX.offsetTop+"px";
+		if(isNaN(parseInt(rulerX.style.left))) rulerX.style.left="0px";
+		if(isNaN(parseInt(rulerX.style.top))) rulerX.style.top="0px";
+		if(!rulerY.style.left || isNaN(rulerY.style.left)) rulerY.style.left=rulerY.offsetLeft+"px";
+		if(!rulerY.style.top || isNaN(rulerY.style.top)) rulerY.style.top=rulerY.offsetTop+"px";
+		if(isNaN(parseInt(rulerY.style.left))) rulerY.style.left="0px";
+		if(isNaN(parseInt(rulerY.style.top))) rulerY.style.top="0px";
+		rulerX.style.clip="rect(0px "+(parseInt(editorWindow.style.width)+editorImage.scrollLeft-15)+"px 15px "+(editorImage.scrollLeft)+"px)";// top, right, bottom, left
+		rulerY.style.clip="rect("+editorImage.scrollTop+"px 15px "+(parseInt(editorWindow.style.height)+editorImage.scrollTop-15)+"px 0px)";
+		rulerX.style.top="0px";
+		rulerX.style.left=(15-editorImage.scrollLeft)+"px";
+		rulerY.style.top=(15-editorImage.scrollTop)+"px";
+		rulerY.style.left="0px";
 	},//end function updateCanvas
 
 	displayImage : function(imageData){
@@ -1466,6 +1511,19 @@ items: [{
 			});
 		}//end function canvasPIC.onload
 
+		var IEc= Ext.get("ImageEditorCanvas");//init the eventManager
+		IEc.on('click', function(e){this.mouseManager ("click",e)},this);
+		IEc.on('dblclick', function(e){this.mouseManager ("dblclick",e)},this);
+		IEc.on('keydown', function(e){this.mouseManager ("keydown",e)},this);
+		IEc.on('keyup', function(e){this.mouseManager ("keyup",e)},this);
+		IEc.on('keypress', function(e){this.mouseManager ("keypress",e)},this);
+		IEc.on('mousedown', function(e){this.mouseManager ("mousedown",e)},this);
+		IEc.on('mouseup', function(e){this.mouseManager ("mouseup",e)},this);
+		IEc.on('mousemove', function(e){this.mouseManager ("mousemove",e)},this,{delay:150});
+		IEc.on('mouseover', function(e){this.mouseManager ("mouseover",e)},this);
+		IEc.on('mouseout', function(e){this.mouseManager ("mouseout",e)},this);
+		IEc.on('scroll', function(e){this.mouseManager ("scroll",e)},this);
+
 		thisApp.setTitle(rich_ImageEditor.winTitle+" &minus; "+rich_ImageEditor.imgName);
 		thisApp.taskButton.setText(rich_ImageEditor.winTitle+" &minus; "+rich_ImageEditor.imgName);
 		try{
@@ -1473,6 +1531,7 @@ items: [{
 			this.enableMenuFunctions();
 			this.onStatusUpdate();
 		}catch(e){}
+
 	},//end function displayImage
 
 	processImage: function(params){
@@ -1538,9 +1597,95 @@ items: [{
 				this.showErrorMsg(rich_ImageEditor.connErrMsg);
 			}//end failure function
 			,aURL
-		);    
-	}//end function processImage
+		);
+	},//end function processImage
 	
+	mouseManager: function(/* string*/ mouseEventType, /*  object */ eventObj){
+		var rulerX=document.getElementById("edRuleX");
+		var rulerY=document.getElementById("edRuleY");
+		var editorWindow = document.getElementById("ImageEditorWindow");
+		var editorImage = document.getElementById("ImageEditorCanvas");
+		var sb = Ext.getCmp("rich_imgEditor-win-statusbar");
+		if(mouseEventType=="mousedown"){
+			rich_ImageEditor.mouseStore.mouseIsDown=true;
+			rich_ImageEditor.mouseStore.startX=Math.floor(eventObj.getXY()[0]-thisApp.getPosition()[0])-23+editorImage.scrollLeft;
+			rich_ImageEditor.mouseStore.startY=Math.floor(eventObj.getXY()[1]-thisApp.getPosition()[1])-70+editorImage.scrollTop;
+		}//end if mousedown
+		if(mouseEventType=="mouseup" || mouseEventType=="click" || mouseEventType=="dblclick") rich_ImageEditor.mouseStore.mouseIsDown=false;
+		if(Ext.isIE){
+			rich_ImageEditor.mouseStore.isCtrlKey=eventObj.ctrlKey;
+			rich_ImageEditor.mouseStore.isAltKey=eventObj.altKey||eventObj.metaKey;
+			rich_ImageEditor.mouseStore.isShiftKey=eventObj.shiftKey;
+			eventObj.cancelBubble=true;//free up memory
+			//e.returnValue=false;
+		}else{
+			rich_ImageEditor.mouseStore.isCtrlKey=typeof(eventObj.modifiers)=="undefined" ? eventObj.ctrlKey : eventObj.modifiers & Event.CONTROL_MASK;
+			rich_ImageEditor.mouseStore.isAltKey=typeof(eventObj.modifiers)=="undefined" ? eventObj.altKey : eventObj.modifiers & Event.ALT_MASK;
+			rich_ImageEditor.mouseStore.isShiftKey=typeof(eventObj.modifiers)=="undefined" ? eventObj.shiftKey : eventObj.modifiers & Event.SHIFT_MASK;
+			eventObj.stopPropagation();//free up memory
+			eventObj.preventDefault();
+		}//end if MSIE
+		switch(mouseEventType){
+			case "scroll"://force rulers to scroll with image
+				try{
+					rulerX.style.clip="rect(0px "+(parseInt(editorWindow.style.width)+editorImage.scrollLeft-15)+"px 15px "+(editorImage.scrollLeft)+"px)";// top, right, bottom, left
+					rulerY.style.clip="rect("+editorImage.scrollTop+"px 15px "+(parseInt(editorWindow.style.height)+editorImage.scrollTop-15)+"px 0px)";
+					editorImage.style.top="15px";
+					editorImage.style.cursor=rich_ImageEditor.cursorStyle;
+					rulerX.style.top="0px";
+					rulerX.style.left=(15-editorImage.scrollLeft)+"px";
+					rulerY.style.top=(15-editorImage.scrollTop)+"px";
+					rulerY.style.left="0px";
+				}catch(e){}
+				//sb.setStatus({iconCls: 'x-status-valid',  text: mouseEventType+"("+editorImage.scrollLeft+", "+editorImage.scrollTop+")"});
+				break;
+			case "mousemove":
+				try{
+				if(Ext.getCmp("rich_imgEditor-toolbar_Hand").pressed) this.mouseHand(eventObj);
+				}catch(e){}
+				break;
+			default:
+				try{
+				if(!Ext.getCmp("rich_imgEditor-toolbar_Hand").pressed &&
+					!Ext.getCmp("rich_imgEditor-toolbar_Marquee").pressed &&
+					!Ext.getCmp("rich_imgEditor-toolbar_Crop").pressed){
+					sb.setStatus({iconCls: 'x-status-valid',  text: mouseEventType+" detected"});
+				}//if no active function
+				rich_ImageEditor.mouseStore.X=Math.floor(eventObj.getXY()[0]-thisApp.getPosition()[0])-23+editorImage.scrollLeft;
+				rich_ImageEditor.mouseStore.Y=Math.floor(eventObj.getXY()[1]-thisApp.getPosition()[1])-70+editorImage.scrollTop;
+				}catch(e){}
+				break;
+		}//end switch mouseEventType
+	},//end function mouseManager
+
+	mouseHand: function( /*  object */ eventObj){
+    	var thisApp = rich_ImageEditor.getDesktop.getWindow(rich_ImageEditor.winId);
+		var sb = Ext.getCmp("rich_imgEditor-win-statusbar");
+		var editorImage = document.getElementById("ImageEditorCanvas");
+		if(eventObj===null){//then just init function
+			try{
+			if(Ext.getCmp("rich_imgEditor-toolbar_Hand").pressed){
+				Ext.getCmp("rich_imgEditor-toolbar_Marquee").toggle(false);
+				Ext.getCmp("rich_imgEditor-toolbar_Crop").toggle(false);
+				sb.setStatus({iconCls: 'x-status-valid',  text: "Hand function enabled"});
+				rich_ImageEditor.cursorStyle="pointer";
+			}else{
+				sb.setStatus({iconCls: 'x-status-valid',  text: "Ready"});
+				rich_ImageEditor.cursorStyle="default";
+			}//end if hand btn pressed=true
+			editorImage.style.cursor = rich_ImageEditor.cursorStyle;
+			}catch(e){}
+		}else{//handle mouse event
+			if(rich_ImageEditor.mouseStore.mouseIsDown===true){
+				rich_ImageEditor.mouseStore.X=Math.floor(eventObj.getXY()[0]-thisApp.getPosition()[0])-23+editorImage.scrollLeft;
+				rich_ImageEditor.mouseStore.Y=Math.floor(eventObj.getXY()[1]-thisApp.getPosition()[1])-70+editorImage.scrollTop;
+				editorImage.scrollLeft=rich_ImageEditor.mouseStore.startX-rich_ImageEditor.mouseStore.X;
+				editorImage.scrollTop=rich_ImageEditor.mouseStore.startY-rich_ImageEditor.mouseStore.Y;
+				sb.setStatus({ iconCls: 'x-status-valid',  text: "DEBUG:: mouseXY ( "+rich_ImageEditor.mouseStore.X+", "+rich_ImageEditor.mouseStore.Y + "); " });
+				//thisApp.getPosition( "+thisApp.getPosition()[0]+", "+thisApp.getPosition()[1]+")
+			}//end if mouseDown
+		}//end if mouse event passed
+	}//end function mouseHand
 }//end function (call) Ext.extend
 );// end var QoDesk.rich_imgEditor
 
@@ -1550,53 +1695,14 @@ QoDesk.rich_imgEditor.VIcontainer = function(config){
 	this.owner = config.owner;
 	
 	QoDesk.rich_imgEditor.VIcontainer.superclass.constructor.call(this, {
-	/*
-	TODO: re-write this using a template... see dataView example and EXT.templates
-	*/
 		autoScroll: false,
 		bodyStyle: 'padding:0px',
 		border: false,
-		html: '<div name="ImageEditorWindow" id="ImageEditorWindow" ><table id="IEW_canvasContainer" border="0" cellpadding="0" cellspacing="0"><tr><td align="right" valign="bottom"><img id="rulerZ" name="rulerZ" src="/!Admin/images/rule+.jpg" width="15" height="15" alt="Ruler" galleryimg="no"></td><td align="left" valign="bottom"><div id="edRuleX" name="edRuleX" style="height:15px;"><img id="rulerX" name="rulerX" src="/!Admin/images/IMGruler_vert.jpg" width="699" height="15" alt="Ruler: Pixels" galleryimg="no"></div></td></tr><tr><td align="right" valign="top" background="/!Admin/images/canvasPattern.jpg"><div id="edRuleY" name="edRuleY" style="width:15px;"><img id="rulerY" name="rulerY" src="/!Admin/images/IMGruler_horizontal.jpg" width="15" height="699" alt="Ruler: Pixels" galleryimg="no"></div></td><td width="100%" height="100%" align="left" valign="top" background="/!Admin/images/canvasPattern.jpg"><div name="ImageEditorCanvas" id="ImageEditorCanvas"></div></td></tr></table></div>',
+		html: '<div name="ImageEditorWindow" id="ImageEditorWindow" ><table id="IEW_canvasContainer" border="0" cellpadding="0" cellspacing="0"><tr><td align="right" valign="bottom"><img id="rulerZ" name="rulerZ" src="/!Admin/images/rule+.jpg" width="15" height="15" alt="Ruler" galleryimg="no"></td><td align="left" valign="bottom"><div id="edRuleX" name="edRuleX"><img id="rulerX" name="rulerX" src="/!Admin/images/IMGruler_vert.jpg" width="699" height="15" alt="Ruler: Pixels" galleryimg="no"></div></td></tr><tr><td align="right" valign="top"><div id="edRuleY" name="edRuleY"><img id="rulerY" name="rulerY" src="/!Admin/images/IMGruler_horizontal.jpg" width="15" height="699" alt="Ruler: Pixels" galleryimg="no"></div></td><td width="100%" height="100%" align="left" valign="top" background="/!Admin/images/canvasPattern.jpg"><div name="ImageEditorCanvas" id="ImageEditorCanvas"></div></td></tr></table></div>',
 		id: config.id
 	});
-	
 };
-
-Ext.extend(QoDesk.rich_imgEditor.VIcontainer, Ext.Panel, {
-	afterRender : function(){
-		this.on({
-			'mousedown': {
-				fn: this.doAction,
-				scope: this,
-				delegate: 'a'
-			},
-			'click': {
-				fn: Ext.emptyFn,
-				scope: null,
-				delegate: 'a',
-				preventDefault: true
-			}
-		});
-		
-		QoDesk.rich_imgEditor.VIcontainer.superclass.afterRender.call(this); // do sizing calcs last
-	},
-	
-	doAction : function(e, t){
-    	e.stopEvent();
-		alert("mouse action detected...");
-    	this.actions[t.id](this.owner);  // pass owner for scope
-    }
-});
-
-
-
-
-
-
-
-
-
-
+Ext.extend(QoDesk.rich_imgEditor.VIcontainer, Ext.Panel);
 
 
 
@@ -1889,7 +1995,7 @@ Ext.form.ButtonField = Ext.extend(Ext.form.Field,  {
                 }
                 if(this.inputType){
                     cfg.type = this.inputType;   
-		}
+				}
                 this.el = ct.createChild(cfg, position);
             }
 

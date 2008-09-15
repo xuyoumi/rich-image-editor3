@@ -438,7 +438,7 @@ if(!empty($imageName) && !strripos($response,"error")){
 
 	$exif = @exif_read_data($editDirectory.$imgNameIndex, 0, true, false);
 	if($exif === false || empty($exif)){
-		$exif= "&lt; none available &gt;<br />";
+		$exif= "< none available >";
 	}else{
 		$exif= addslashes(prMultiDemArray($exif));
 		$exif= str_replace("\n", "", $exif);
