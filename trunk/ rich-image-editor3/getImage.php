@@ -11,7 +11,11 @@
 
 //TODO: add save-as feature==> output file as a different image type
 error_reporting(E_ERROR | E_PARSE); //limit error output
-mb_internal_encoding("UTF-8");// add support for Asian languages
+$phpV=(float) substr(phpversion(),0,strpos(phpversion(), '.',2));
+//if(version_compare(PHP_VERSION, '5.2.0', '>')) {
+if($phpV>=5.2){
+	mb_internal_encoding("UTF-8");// add support for Asian languages
+}//end if PHP is too old
 
 require_once("imgFunctions.php");
 
@@ -26,8 +30,13 @@ $dl = htmlspecialchars(addslashes(strip_tags(urldecode($_REQUEST['dl']))),ENT_NO
 $Hindex = htmlspecialchars(addslashes(strip_tags(urldecode($_REQUEST['Hindex']))),ENT_NOQUOTES, "UTF-8");
 if($Hindex<0 || !is_numeric($Hindex)) $Hindex=0;
 
-$imgType = mb_substr($imageName, strrpos($imageName, ".")-strlen($imageName)+1 );
-$imgNameIndex=mb_substr($imageName, 0,strrpos($imageName, "."))."____[$Hindex].$imgType";
+if($phpV>=5.2){
+	$imgType = mb_substr($imageName, strrpos($imageName, ".")-strlen($imageName)+1 );
+	$imgNameIndex=mb_substr($imageName, 0,strrpos($imageName, "."))."____[$Hindex].$imgType";
+}else{
+	$imgType = substr($imageName, strrpos($imageName, ".")-strlen($imageName)+1 );
+	$imgNameIndex=substr($imageName, 0,strrpos($imageName, "."))."____[$Hindex].$imgType";
+}//end if PHP is too old
 
 if(empty($imageName) || !file_exists($originalDirectory.$imageName)){
 	header("Content-Type: text/plain");
@@ -103,9 +112,9 @@ header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: no-store, no-cache, must-revalidate");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
-header("Content-Type: $contentType");
+header("Content-Type: $contentType"); //; charset=UTF-8 
 header("Content-Length: $imageDataLength");
-header("Content-Disposition: $dl; filename=$imageName"); //
+header("Content-Disposition: $dl; filename=$imageName");
 header("Content-Description: Image Editor 3.0 file");
 echo $imageData;
 //imagedestroy($output);

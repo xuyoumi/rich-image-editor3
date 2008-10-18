@@ -171,13 +171,21 @@
     background: transparent url(/!Admin/system/modules/rich_imgEditor-v3.0/images/saving.gif) no-repeat 3px 3px;
 	background-repeat:none;
 	background-position: left;
+	width: 16px;
+	height: 16px;
+}
 }
 #rich_imgEditor-win-statusbar .x-status-saved {
     padding-left: 25px;
     background: transparent url(/!Admin/system/modules/rich_imgEditor-v3.0/images/saved.png) no-repeat 3px 3px;
+/*
     filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin//system/modules/rich_imgEditor-v3.0/images/saved.png', sizingMethod='scale');
+*/
 	background-repeat:none;
 	background-position: left;
+	width: 16px;
+	height: 16px;
+}
 
 }
 
@@ -187,8 +195,9 @@
     cursor: pointer;
     padding-left: 25px;
     background: transparent url(!Admin/system/modules/rich_imgEditor-v3.0/icons/png/exclamation.png) no-repeat 3px 3px;
-    filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/exclamation.png', sizingMethod='scale');
-
+/*
+   filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin/system/modules/rich_imgEditor-v3.0/icons/png/exclamation.png', sizingMethod='scale');
+*/
 	background-repeat:none;
 	background-position: left;
 	width: 16px;
@@ -197,8 +206,9 @@
 .x-statusbar .x-status-valid {
     padding-left: 25px;
     background: transparent url(/!Admin/system/modules/rich_imgEditor-v3.0/images/accept.png) no-repeat 3px 3px;
+/*
     filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/!Admin//system/modules/rich_imgEditor-v3.0/images/accept.png', sizingMethod='scale');
-
+*/
 	background-repeat:none;
 	background-position: left;
 	width: 16px;

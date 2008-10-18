@@ -7,7 +7,10 @@
 */
 // required params: action, imageName
 error_reporting(E_ERROR | E_PARSE); //limit error output
-mb_internal_encoding("UTF-8");// add support for Asian languages
+$phpV=(float) substr(phpversion(),0,strpos(phpversion(), '.',2));
+if($phpV>=5.2){
+	mb_internal_encoding("UTF-8");// add support for Asian languages
+}//end if PHP is too old
 header("Content-Type: text/html");
 require_once("imgFunctions.php");
 
@@ -65,10 +68,15 @@ $imgRez=72; //default web image resolution...
 $imgAspectRatio = 1;
 
 
-$imgType = mb_substr($imageName, strrpos($imageName, ".")-strlen($imageName)+1 );
-//$imgNameIndex=basename($imageName, ".$imgType")."____[$Hindex].$imgType";
-//basename is not mult-byte safe!
-$imgNameIndex=mb_substr($imageName, 0,strrpos($imageName, "."))."____[$Hindex].$imgType";
+if($phpV>=5.2){
+	$imgType = mb_substr($imageName, strrpos($imageName, ".")-strlen($imageName)+1 );
+	$imgNameIndex=mb_substr($imageName, 0,strrpos($imageName, "."))."____[$Hindex].$imgType";
+}else{
+	$imgType = substr($imageName, strrpos($imageName, ".")-strlen($imageName)+1 );
+	//$imgNameIndex=basename($imageName, ".$imgType")."____[$Hindex].$imgType";
+	//basename is not mult-byte safe!
+	$imgNameIndex=substr($imageName, 0,strrpos($imageName, "."))."____[$Hindex].$imgType";
+}//end if PHP is too old
 
 
 if($action!="storeImage" && $action!="exploreImages"){

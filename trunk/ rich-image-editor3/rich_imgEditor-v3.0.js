@@ -41,7 +41,7 @@ var  rich_ImageEditor = new Ext.data.Store({
 		imgZoomDialogTitle	: 	'Image Editor :: Zoom',
 		aboutDialogTitle	: 	'About Image Editor 3.0',
 		aboutDialogUrl		: 	'./system/modules/rich_imgEditor-v3.0/about.php',
-		MAX_FILE_SIZE	: 8000000, 	//from php.ini
+		MAX_FILE_SIZE	: 8000000, 	//from php.ini //<?PHP echo ((int) ini_get('upload_max_filesize')*1048576); ?>
 		origDir	: "/!Admin/system/modules/rich_imgEditor-v3.0/Saved/",		//Save / Restore directory
 		editDir	: "/!Admin/system/modules/rich_imgEditor-v3.0/edit/",		//files kept here during editing
 		func_mirrorDef 	: "flip",
@@ -124,7 +124,6 @@ QoDesk.rich_imgEditor = Ext.extend(Ext.app.Module, {
 	createWindow : function(){
 		var desktop = this.app.getDesktop();
 		rich_ImageEditor.getDesktop = desktop;
-		//var rImgEdwin = desktop.getWindow(rich_ImageEditor.winId);
 		if(!desktop.getWindow(rich_ImageEditor.winId)){
 			var winWidth = desktop.getViewWidth() / 1.1;
 			var winHeight = desktop.getViewHeight() / 1.1;
@@ -1425,7 +1424,7 @@ items: [{
 			sb_text=imageData.lastFtnCall.action+" done. "+sb_text;
 		}catch(e){}//escape err
 		sb.setStatus({
-			iconCls: '',
+			iconCls: 'x-status-busy',
 			text: sb_text
 		});
 		if(actionFlag){
@@ -1496,7 +1495,7 @@ items: [{
 		Ext.DomHelper.overwrite('ImageEditorCanvas', {
 			tag: 'img'
 			,src: rich_ImageEditor.getImgUrl+"?imageName="+rich_ImageEditor.imgName+"&Hindex="+rich_ImageEditor.historyIndex+"&_dc="+(new Date).getTime()
-			,style:'margin:0px;'//visibility:hidden;
+			,style:'margin:0px;'
 			,id: "CanvasPIC"
 			,name: "CanvasPIC"
 		}, true).show(true).frame();
@@ -1512,17 +1511,18 @@ items: [{
 		}//end function canvasPIC.onload
 
 		var IEc= Ext.get("ImageEditorCanvas");//init the eventManager
-		IEc.on('click', function(e){this.mouseManager ("click",e)},this);
-		IEc.on('dblclick', function(e){this.mouseManager ("dblclick",e)},this);
-		IEc.on('keydown', function(e){this.mouseManager ("keydown",e)},this);
-		IEc.on('keyup', function(e){this.mouseManager ("keyup",e)},this);
-		IEc.on('keypress', function(e){this.mouseManager ("keypress",e)},this);
-		IEc.on('mousedown', function(e){this.mouseManager ("mousedown",e)},this);
-		IEc.on('mouseup', function(e){this.mouseManager ("mouseup",e)},this);
-		IEc.on('mousemove', function(e){this.mouseManager ("mousemove",e)},this,{delay:150});
-		IEc.on('mouseover', function(e){this.mouseManager ("mouseover",e)},this);
-		IEc.on('mouseout', function(e){this.mouseManager ("mouseout",e)},this);
-		IEc.on('scroll', function(e){this.mouseManager ("scroll",e)},this);
+		IEc.on('click', function(e){this.mouseManager("click",e)},this);
+		IEc.on('dblclick', function(e){this.mouseManager("dblclick",e)},this);
+		if(Ext.isIE) IEc.on('drag', function(e){this.mouseManager("drag",e)},this);//,{delay:20}
+		IEc.on('keydown', function(e){this.mouseManager("keydown",e)},this);
+		IEc.on('keyup', function(e){this.mouseManager("keyup",e)},this);
+		IEc.on('keypress', function(e){this.mouseManager("keypress",e)},this);
+		IEc.on('mousedown', function(e){this.mouseManager("mousedown",e)},this);
+		IEc.on('mouseup', function(e){this.mouseManager("mouseup",e)},this);
+		IEc.on('mousemove', function(e){this.mouseManager("mousemove",e)},this);
+		IEc.on('mouseover', function(e){this.mouseManager("mouseover",e)},this);
+		IEc.on('mouseout', function(e){this.mouseManager("mouseout",e)},this);
+		IEc.on('scroll', function(e){this.mouseManager("scroll",e)},this);
 
 		thisApp.setTitle(rich_ImageEditor.winTitle+" &minus; "+rich_ImageEditor.imgName);
 		thisApp.taskButton.setText(rich_ImageEditor.winTitle+" &minus; "+rich_ImageEditor.imgName);
@@ -1543,7 +1543,7 @@ items: [{
 		}//end if url
 		var sb = Ext.getCmp("rich_imgEditor-win-statusbar");
 		sb.setStatus({
-			iconCls: '',
+			iconCls: 'x-status-busy',
 			text: "Sent server request: "+params.action
 		});
 		//add imageName to params
@@ -1605,25 +1605,26 @@ items: [{
 		var rulerY=document.getElementById("edRuleY");
 		var editorWindow = document.getElementById("ImageEditorWindow");
 		var editorImage = document.getElementById("ImageEditorCanvas");
+    	var thisApp = rich_ImageEditor.getDesktop.getWindow(rich_ImageEditor.winId);
 		var sb = Ext.getCmp("rich_imgEditor-win-statusbar");
 		if(mouseEventType=="mousedown"){
 			rich_ImageEditor.mouseStore.mouseIsDown=true;
 			rich_ImageEditor.mouseStore.startX=Math.floor(eventObj.getXY()[0]-thisApp.getPosition()[0])-23+editorImage.scrollLeft;
 			rich_ImageEditor.mouseStore.startY=Math.floor(eventObj.getXY()[1]-thisApp.getPosition()[1])-70+editorImage.scrollTop;
 		}//end if mousedown
-		if(mouseEventType=="mouseup" || mouseEventType=="click" || mouseEventType=="dblclick") rich_ImageEditor.mouseStore.mouseIsDown=false;
+		if(mouseEventType=="mouseup" || mouseEventType=="mouseout" || mouseEventType=="click" || mouseEventType=="dblclick") rich_ImageEditor.mouseStore.mouseIsDown=false;
 		if(Ext.isIE){
 			rich_ImageEditor.mouseStore.isCtrlKey=eventObj.ctrlKey;
 			rich_ImageEditor.mouseStore.isAltKey=eventObj.altKey||eventObj.metaKey;
 			rich_ImageEditor.mouseStore.isShiftKey=eventObj.shiftKey;
+			eventObj.returnValue=false;
 			eventObj.cancelBubble=true;//free up memory
-			//e.returnValue=false;
 		}else{
 			rich_ImageEditor.mouseStore.isCtrlKey=typeof(eventObj.modifiers)=="undefined" ? eventObj.ctrlKey : eventObj.modifiers & Event.CONTROL_MASK;
 			rich_ImageEditor.mouseStore.isAltKey=typeof(eventObj.modifiers)=="undefined" ? eventObj.altKey : eventObj.modifiers & Event.ALT_MASK;
 			rich_ImageEditor.mouseStore.isShiftKey=typeof(eventObj.modifiers)=="undefined" ? eventObj.shiftKey : eventObj.modifiers & Event.SHIFT_MASK;
-			eventObj.stopPropagation();//free up memory
 			eventObj.preventDefault();
+			eventObj.stopPropagation();//free up memory
 		}//end if MSIE
 		switch(mouseEventType){
 			case "scroll"://force rulers to scroll with image
@@ -1637,9 +1638,9 @@ items: [{
 					rulerY.style.top=(15-editorImage.scrollTop)+"px";
 					rulerY.style.left="0px";
 				}catch(e){}
-				//sb.setStatus({iconCls: 'x-status-valid',  text: mouseEventType+"("+editorImage.scrollLeft+", "+editorImage.scrollTop+")"});
 				break;
 			case "mousemove":
+			case "drag":
 				try{
 				if(Ext.getCmp("rich_imgEditor-toolbar_Hand").pressed) this.mouseHand(eventObj);
 				}catch(e){}
@@ -1649,7 +1650,7 @@ items: [{
 				if(!Ext.getCmp("rich_imgEditor-toolbar_Hand").pressed &&
 					!Ext.getCmp("rich_imgEditor-toolbar_Marquee").pressed &&
 					!Ext.getCmp("rich_imgEditor-toolbar_Crop").pressed){
-					sb.setStatus({iconCls: 'x-status-valid',  text: mouseEventType+" detected"});
+					sb.setStatus({iconCls: 'x-status-valid',  text: "DEBUG:: mouseXY.start ( "+rich_ImageEditor.mouseStore.startX+", "+rich_ImageEditor.mouseStore.startY + "); mouseXY ( "+rich_ImageEditor.mouseStore.X+", "+rich_ImageEditor.mouseStore.Y + "); scrollXY ( "+editorImage.scrollLeft+", "+editorImage.scrollTop + "); "+mouseEventType+" detected; (down="+rich_ImageEditor.mouseStore.mouseIsDown+")"});
 				}//if no active function
 				rich_ImageEditor.mouseStore.X=Math.floor(eventObj.getXY()[0]-thisApp.getPosition()[0])-23+editorImage.scrollLeft;
 				rich_ImageEditor.mouseStore.Y=Math.floor(eventObj.getXY()[1]-thisApp.getPosition()[1])-70+editorImage.scrollTop;
@@ -1660,6 +1661,8 @@ items: [{
 
 	mouseHand: function( /*  object */ eventObj){
     	var thisApp = rich_ImageEditor.getDesktop.getWindow(rich_ImageEditor.winId);
+		var winWidth = thisApp. getInnerWidth();
+		var winHeight = thisApp.getInnerHeight();
 		var sb = Ext.getCmp("rich_imgEditor-win-statusbar");
 		var editorImage = document.getElementById("ImageEditorCanvas");
 		if(eventObj===null){//then just init function
@@ -1676,14 +1679,17 @@ items: [{
 			editorImage.style.cursor = rich_ImageEditor.cursorStyle;
 			}catch(e){}
 		}else{//handle mouse event
+			rich_ImageEditor.mouseStore.X=Math.floor(eventObj.getXY()[0]-thisApp.getPosition()[0])-23;
+			rich_ImageEditor.mouseStore.Y=Math.floor(eventObj.getXY()[1]-thisApp.getPosition()[1])-70;
 			if(rich_ImageEditor.mouseStore.mouseIsDown===true){
-				rich_ImageEditor.mouseStore.X=Math.floor(eventObj.getXY()[0]-thisApp.getPosition()[0])-23+editorImage.scrollLeft;
-				rich_ImageEditor.mouseStore.Y=Math.floor(eventObj.getXY()[1]-thisApp.getPosition()[1])-70+editorImage.scrollTop;
-				editorImage.scrollLeft=rich_ImageEditor.mouseStore.startX-rich_ImageEditor.mouseStore.X;
-				editorImage.scrollTop=rich_ImageEditor.mouseStore.startY-rich_ImageEditor.mouseStore.Y;
-				sb.setStatus({ iconCls: 'x-status-valid',  text: "DEBUG:: mouseXY ( "+rich_ImageEditor.mouseStore.X+", "+rich_ImageEditor.mouseStore.Y + "); " });
-				//thisApp.getPosition( "+thisApp.getPosition()[0]+", "+thisApp.getPosition()[1]+")
+				var  scrollLeft=rich_ImageEditor.mouseStore.startX-rich_ImageEditor.mouseStore.X;
+				var scrollTop=rich_ImageEditor.mouseStore.startY-rich_ImageEditor.mouseStore.Y;
+				if(scrollLeft+editorImage.scrollLeft>0) editorImage.scrollLeft=scrollLeft;
+				if(scrollTop+editorImage.scrollTop>0) editorImage.scrollTop=scrollTop;
 			}//end if mouseDown
+			rich_ImageEditor.mouseStore.X+=editorImage.scrollLeft;
+			rich_ImageEditor.mouseStore.Y+=editorImage.scrollTop;
+			sb.setStatus({ iconCls: 'x-status-valid',  text: "mouseXY ( "+rich_ImageEditor.mouseStore.X+", "+rich_ImageEditor.mouseStore.Y + "); scrollXY ( "+editorImage.scrollLeft+", "+editorImage.scrollTop + "); " });
 		}//end if mouse event passed
 	}//end function mouseHand
 }//end function (call) Ext.extend
@@ -1959,7 +1965,7 @@ QoDesk.rich_imgEditor.ImageViewer.prototype = {
 					try{
 						var sb = Ext.getCmp("rich_imgEditor-win-statusbar");
 						sb.setStatus({
-							iconCls: '',
+							iconCls: 'x-status-busy',
 							text: "Opening image..."
 						});
 					}catch(e){}
